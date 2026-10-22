@@ -141,7 +141,7 @@ esptool --chip esp32s3 -b 460800 --before default-reset --after hard-reset \
 | `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷 |
 | `vanos-app.bin` | 2.72 MB | 仅应用，从 `0x10000` 刷 |
 | `flash.sh` | — | 一键刷写脚本：`./flash.sh [端口]` 整片刷、`./flash.sh [端口] app` 只刷应用 |
-| `books/` | — | 示例书《十四年猎鬼人》，拷到 `VanOS/BOOKS/` 即可 |
+| `fonts/朱雀仿宋.ttf` | 8.4 MB | 推荐正文字体，放到 SD 卡 `VanOS/fonts/`（见下节） |
 
 ---
 
