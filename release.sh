@@ -1,6 +1,6 @@
 #!/bin/sh
-# 一键发布：提交 + 推送（master/main 两个分支）+ 同步线刷页面的 manifest
-# One-shot release: commit, push both branches, then re-point the web flasher
+# 一键发布：提交 + 推送到 master + 同步线刷页面的 manifest
+# One-shot release: commit, push master, then re-point the web flasher
 # manifests at the new commit so no CDN/browser cache can serve the old bin.
 set -e
 cd "$(dirname "$0")"
@@ -12,7 +12,6 @@ else
   git commit -m "$MSG"
 fi
 git push origin HEAD:master
-git push origin HEAD:main
 LANDING="${LANDING:-$(cd .. && pwd)/esp32/landing}"
 if [ -f "$LANDING/sync-manifests.py" ]; then
   cd "$LANDING" && python3 sync-manifests.py

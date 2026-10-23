@@ -145,34 +145,6 @@ esptool --chip esp32s3 -b 460800 --before default-reset --after hard-reset \
 
 ---
 
-## 发布流程
-
-推新固件只要一条命令（在仓库根目录）：
-
-```bash
-./release.sh "固件 2026-10-22：改了 xxx"
-```
-
-它做三件事：
-
-1. `git add -A` + 提交（没改动就跳过）
-2. 同时推 `master` 和 `main`（远端有两个分支，只推一个会有另一个是旧的）
-3. 跑 `~/Desktop/esp32/landing/sync-manifests.py`，把线刷页面的 manifest 指到**新 commit 的固定 URL**
-
-**为什么必须跑第三步**：线刷页面（esp-web-install-button）从
-`raw.githubusercontent.com` 拉 bin，那条 CDN 有 `max-age=300` 缓存；页面里的 manifest 自身也会被浏览器缓存。
-脚本做两件事解决：
-
-- manifest 里的 bin 地址改成 **commit 固定 URL**（`/raw/<sha>/vanos-app.bin`）——同一 URL 永远同一内容，内容变了 URL 就变
-- 页面里的 `manifest="manifest-app.json?v=<短sha>"` 也带上版本号，新固件一推 URL 就变
-
-所以**每次上传 bin 之后都要跑一次**（或者直接用 `release.sh` 一次做完）。
-只推 git 不跑脚本 → 页面可能还在拉上一个 commit 的 bin。
-
-环境变量 `LANDING` 可以覆盖落地页目录（默认自动找同级的 `esp32/landing`）。
-
----
-
 ## 更新日志
 
 ### 2026-10-22（晚）
