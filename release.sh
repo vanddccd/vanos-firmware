@@ -1,7 +1,7 @@
 #!/bin/sh
-# 一键发布：提交 + 推 master + 同步线刷 manifest + 部署线刷页面到 Cloudflare Pages
-# One-shot release: commit, push master, sync the web-flasher manifest, then
-# deploy the flasher page to Cloudflare Pages (same URL every time).
+# 一键发布：提交 + 推 master + 把固件搬进落地页 + 部署到 Cloudflare Pages
+# One-shot release: commit, push master, refresh the self-contained flasher
+# page (bin/ttf/engine all local), then deploy it to Cloudflare Pages.
 set -e
 cd "$(dirname "$0")"
 MSG="${1:-固件 $(date +%F)}"
@@ -24,6 +24,7 @@ fi
 
 DIST="$(mktemp -d)"
 trap 'rm -rf "$DIST"' EXIT
-cp "$LANDING/index.html" "$LANDING"/manifest-*.json "$DIST"/
+cp "$LANDING/index.html" "$LANDING/changelog.html" "$LANDING/manifest-full.json" "$LANDING/_headers" "$DIST"/
+cp "$LANDING/merged-binary.bin" "$LANDING/朱雀仿宋.ttf" "$DIST"/
 cp -R "$LANDING/assets" "$DIST"/
 ( cd "$DIST" && npx --yes wrangler pages deploy . --project-name=vanos --branch=master --commit-dirty=true )
