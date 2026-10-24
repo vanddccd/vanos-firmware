@@ -6,6 +6,34 @@ set -e
 cd "$(dirname "$0")"
 MSG="${1:-固件 $(date +%F)}"
 
+# 版本递增守卫：设备"要不要更新"只比版本号，SHA256 只校验传输完整性、从不参与决策
+# （ota_update.c 的 vanos_manifest_version_newer）。所以同一版本号的新构建发出去之后，
+# 所有已经升到该版本的设备都会显示「已是最新」，修复永远到不了任何一台机器，而且
+# 整个过程没有任何报错 —— 这个坑必须由脚本挡住，不能靠人记得改 PROJECT_VER。
+# Version bump guard: the device decides on the version string alone; the sha256 only
+# proves the transfer was intact. Publishing a new build under an unchanged version
+# therefore reaches nobody, silently. That has to be caught here, not by memory.
+APP_BIN="${APP_BIN:-$(pwd)/vanos-app.bin}"
+if [ -f "$APP_BIN" ]; then
+  BUILD_VER="$(python3 - "$APP_BIN" <<'PYVER'
+import struct, sys
+blob = open(sys.argv[1], 'rb').read()
+if struct.unpack_from('<I', blob, 0x20)[0] != 0xABCD5432:
+    sys.exit('不是 ESP 应用镜像')
+sys.stdout.write(blob[0x30:0x50].split(b'\0')[0].decode('ascii', 'replace'))
+PYVER
+)"
+  PUBLISHED_VER="$(curl -fsS --max-time 8 https://vanos.pages.dev/ota.json 2>/dev/null \
+    | python3 -c 'import json,sys;print(json.load(sys.stdin).get("version",""))' 2>/dev/null || true)"
+  if [ -n "$PUBLISHED_VER" ] && [ "$PUBLISHED_VER" = "$BUILD_VER" ] && [ "${FORCE_SAME_VERSION:-0}" != "1" ]; then
+    echo "! 拒绝发布：版本号没变（$BUILD_VER）。" >&2
+    echo "  设备只比版本号，同号新构建发出去等于没发（所有设备都报「已是最新」）。" >&2
+    echo "  先改 CMakeLists.txt 里的 set(PROJECT_VER ...) 末段再重编；确要强推用 FORCE_SAME_VERSION=1。" >&2
+    exit 1
+  fi
+  echo "版本 $BUILD_VER（线上 ${PUBLISHED_VER:-读不到}）"
+fi
+
 git add -A
 if git diff --cached --quiet; then
   echo "没有待提交的改动"
