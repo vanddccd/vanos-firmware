@@ -205,10 +205,11 @@ esptool --chip esp32s3 -b 460800 --before default-reset --after hard-reset \
 - 字距档 0~3 放宽到 0.05/0.10/0.15em，差异明显。
 - 字号弹窗里改完字号，关掉菜单正文立刻生效（此前要翻页才触发）。
 
-**EPUB 兼容**
+**EPUB 解码修复**
 
-- 文件名含冒号/星号的条目、字体条目解压后超 4MB 的书不再打不开（「部分 EPUB 打开后格式异常」已修）。
-- 修 `rd_chap_parse` 全角标点循环的 1 字节越界读。
+- `resolve_path` 不再拒绝含 `:` 的条目名：部分 EPUB 把资源名混淆成 `Text/_**::*:*.xhtml` 这类带冒号/星号的名字，此前一律判成路径穿越、整本书打不开（《废都》实测 `package_parse err 0x102`）。
+- `zip_open` 的解压上限改为只限「压缩后 packed」大小：此前按 `unpacked ≤ 4 MB` 拒绝条目，《鬼吹灯全集》里的中文字体（unpacked 4.06 MB / packed 2.7 MB）直接把整本书挡在门外（`zip_open err 0x104`）。现在按调用方 cap 判，解压后的实际大小仍由 `zip_extract` 兜底。
+- `rd_chap_parse` 全角标点剥离循环补 `c1 == 0` 守卫（原逻辑在串尾会越界读 1 字节，UB）。
 
 **其它**
 
