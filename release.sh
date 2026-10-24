@@ -24,7 +24,8 @@ fi
 
 DIST="$(mktemp -d)"
 trap 'rm -rf "$DIST"' EXIT
-cp "$LANDING/index.html" "$LANDING/changelog.html" "$LANDING/manifest-full.json" "$LANDING/_headers" "$DIST"/
+cp "$LANDING/index.html" "$LANDING/manifest-full.json" "$LANDING/_headers" "$DIST"/
 cp "$LANDING/merged-binary.bin" "$LANDING/朱雀仿宋.ttf" "$DIST"/
 cp -R "$LANDING/assets" "$DIST"/
-( cd "$DIST" && npx --yes wrangler pages deploy . --project-name=vanos --branch=master --commit-dirty=true )
+# 在 landing 目录里部署：Functions（functions/）从这里打包，静态文件用临时目录快照
+( cd "$LANDING" && npx --yes wrangler@3 pages deploy "$DIST" --project-name=vanos --branch=master --commit-dirty=true )
