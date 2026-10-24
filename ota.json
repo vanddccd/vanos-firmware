@@ -1,9 +1,9 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.24.4",
+ "version": "2026.10.25.1",
  "app": "vanos-app.bin",
- "size": 2975328,
- "sha256": "c92e4594662983e4db0d078d2cabcf37ec6f1a8dd05de8b2f055aea1623d0076",
+ "size": 2976544,
+ "sha256": "b910a1aa6942a0b6e981a669d42293bfd99cfd9c834439529be8b6ea025287f3",
  "notes": ""
 }
