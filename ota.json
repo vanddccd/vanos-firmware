@@ -1,9 +1,9 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.25.3",
+ "version": "2026.10.25.4",
  "app": "vanos-app.bin",
- "size": 2978480,
- "sha256": "0ce408f3c2e8f199683952884fc21c0bb5ca97c49e8b10703538f0fc4ed6e579",
- "notes": ""
+ "size": 2979168,
+ "sha256": "34cdf302fdf8435722ea158e4cde540221e52e76594a79c1185b3008b17985d4",
+ "notes": "开机静默校时|主界面每 10 次切换自动清屏|OTA 检查更新可查看版本详情"
 }
