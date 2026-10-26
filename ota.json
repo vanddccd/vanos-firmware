@@ -3,7 +3,15 @@
  "channel": "stable",
  "version": "2026.10.26.2",
  "app": "vanos-app.bin",
- "size": 2986864,
- "sha256": "2329cf7c06b5025054e4a0d80800f433b18b2d64583a4cdde9538130258f4ad5",
- "notes": "OTA 下载进度实时显示|可取消，备份与下载都带进度|升级前自动备份当前版本，可恢复到上一版"
+ "size": 2990416,
+ "sha256": "dafde60dd672645e0012b8add8ee207fb8494def5acd35b06a3d7d32b5752d55",
+ "notes": "",
+ "history": [
+  {
+   "version": "2026.10.26.1",
+   "app": "vanos-app-2026.10.26.1.bin",
+   "size": 2990416,
+   "sha256": "d9f470bb29b476ea037f58eb95c0eafaa70e10d39d50f2a2727c62bbb00e5b97"
+  }
+ ]
 }
