@@ -1,9 +1,9 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.25.4",
+ "version": "2026.10.26.2",
  "app": "vanos-app.bin",
- "size": 2984240,
- "sha256": "964a795bde4a69d2909b26394b33b5795159db013041a1ecb21c255806798348",
- "notes": "OTA 在线升级已开放|下载支持进度显示与取消|升级后自动重启生效"
+ "size": 2984544,
+ "sha256": "f9835711b485a8d3e4098d5d8541b2f6bc57af4560415bee9f144bd74bafb76f",
+ "notes": "OTA 下载进度实时显示|下载可取消，不留半截镜像|新增恢复到上一版本入口"
 }
