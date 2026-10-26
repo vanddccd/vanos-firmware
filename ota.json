@@ -3,15 +3,15 @@
  "channel": "stable",
  "version": "2026.10.26.2",
  "app": "vanos-app.bin",
- "size": 2990416,
- "sha256": "dafde60dd672645e0012b8add8ee207fb8494def5acd35b06a3d7d32b5752d55",
+ "size": 2990720,
+ "sha256": "b293c057cf68cb98e99eb558ed8d114fec6e189494c30c5aab0d359987f5d571",
  "notes": "",
  "history": [
   {
    "version": "2026.10.26.1",
    "app": "vanos-app-2026.10.26.1.bin",
-   "size": 2990416,
-   "sha256": "d9f470bb29b476ea037f58eb95c0eafaa70e10d39d50f2a2727c62bbb00e5b97"
+   "size": 2990656,
+   "sha256": "fb955cd363bfa096910869798e72a2ef9ecab1192c909e16564f7986bbfa8ec1"
   }
  ]
 }
