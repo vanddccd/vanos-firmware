@@ -40,9 +40,9 @@ if git diff --cached --quiet; then
 else
   git commit -m "$MSG"
 fi
-git push origin HEAD:master
+git push bin HEAD:master
 
-LANDING="${LANDING:-$(cd .. && pwd)/esp32/landing}"
+LANDING="${LANDING:-$(cd .. && pwd)/landing}"
 if [ -f "$LANDING/sync-manifests.py" ]; then
   ( cd "$LANDING" && python3 sync-manifests.py )
 else
@@ -64,16 +64,55 @@ if [ ! -f "$APP_BIN" ]; then
   exit 1
 fi
 cp "$APP_BIN" "$DIST/vanos-app.bin"
-python3 - "$APP_BIN" "$DIST/ota.json" <<'PY'
-import hashlib, json, struct, sys
+python3 - "$APP_BIN" "$DIST/ota.json" "$LANDING" <<'PY'
+import glob, hashlib, json, os, re, shutil, struct, sys
 
-src, dst = sys.argv[1], sys.argv[2]
+src, dst, hold = sys.argv[1], sys.argv[2], sys.argv[3]
+dist = os.path.dirname(os.path.abspath(dst))
+
 blob = open(src, 'rb').read()
 magic = struct.unpack_from('<I', blob, 0x20)[0]
 if magic != 0xABCD5432:
     sys.exit('不是 ESP 应用镜像：magic=0x%08x' % magic)
 version = blob[0x30:0x50].split(b'\0')[0].decode('ascii', 'replace')
 digest = hashlib.sha256(blob).hexdigest()
+
+# 每一版都留一份带版本号的副本。删掉它等于把这个版本从回退列表里退役。
+# 存档必须落在 landing：$DIST 是 mktemp -d，下次发布就是空目录，累积不起来。
+# Keep one copy per version, in landing: $DIST is a mktemp dir and would be empty
+# next run, so history could never accumulate (and the deploy would drop the old
+# payloads from the site, turning every history URL into a 404).
+keep = os.path.join(hold, 'vanos-app-%s.bin' % version)
+if not os.path.exists(keep) or hashlib.sha256(open(keep, 'rb').read()).hexdigest() != digest:
+    open(keep, 'wb').write(blob)
+
+# landing 里的存档要一起进本次部署快照，否则线上还是只有当前这一份。
+# Every archived payload rides along in this deployment snapshot.
+for f in glob.glob(os.path.join(hold, 'vanos-app-*.bin')):
+    shutil.copy2(f, dist)
+
+def vkey(v):
+    return tuple(int(x) for x in v.split('.')) if re.fullmatch(r'\d+(\.\d+){3}', v) else (0, 0, 0, 0)
+
+hist = []
+for f in glob.glob(os.path.join(hold, 'vanos-app-*.bin')):
+    b = open(f, 'rb').read()
+    if len(b) < 0x50 or struct.unpack_from('<I', b, 0x20)[0] != 0xABCD5432:
+        continue
+    v = b[0x30:0x50].split(b'\0')[0].decode('ascii', 'replace')
+    if v == version:
+        continue
+    hist.append({'version': v, 'app': os.path.basename(f), 'size': len(b),
+                 'sha256': hashlib.sha256(b).hexdigest()})
+hist.sort(key=lambda e: vkey(e['version']), reverse=True)
+# 与固件端 VANOS_MANIFEST_MAX_HISTORY 对齐，多了会被静默丢弃。
+# Match VANOS_MANIFEST_MAX_HISTORY in the firmware; extra entries are dropped.
+hist = hist[:5]
+
+# notes 在 history 之前、history 放最后：固件端的字段提取是 strstr 整个 body 的，
+# history 排在前面会让 history[0] 冒充顶层 version / app / size / sha256。
+# history goes last: the firmware extracts fields with strstr over the whole body,
+# so an earlier history block would shadow the top-level fields.
 manifest = {
     'product': 'vanos',
     'channel': 'stable',
@@ -82,10 +121,14 @@ manifest = {
     'size': len(blob),
     'sha256': digest,
     'notes': '',
+    'history': hist,
 }
 with open(dst, 'w', encoding='utf-8') as out:
     json.dump(manifest, out, ensure_ascii=False, indent=1)
-print('ota.json  version=%s  size=%d  sha256=%s' % (version, len(blob), digest[:8]))
+print('ota.json  version=%s  size=%d  sha256=%s  history=%d'
+      % (version, len(blob), digest[:8], len(hist)))
+for h in hist:
+    print('  hist %s  %s  %d' % (h['version'], h['app'], h['size']))
 PY
 # 在 landing 目录里部署：Functions（functions/）从这里打包，静态文件用临时目录快照
 ( cd "$LANDING" && npx --yes wrangler@3 pages deploy "$DIST" --project-name=vanos --branch=master --commit-dirty=true )
