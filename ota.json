@@ -3,15 +3,15 @@
  "channel": "stable",
  "version": "2026.10.26.2",
  "app": "vanos-app.bin",
- "size": 2994576,
- "sha256": "3c7509cca2c6971b14584fc77387183bb5d5684fe35ade683665ef9e46e6903b",
- "notes": "",
+ "size": 2994672,
+ "sha256": "2c716d76b25e3ad1b42290b066d22d3667fa2de2f9b0b52ff376eab8651ca543",
+ "notes": "写固件挪到重启后，更新画面带真实进度|下载提速，存过 WiFi 不再弹选网|修 100% 后黑屏、取消回魂、回退文案串台",
  "history": [
   {
    "version": "2026.10.26.1",
    "app": "vanos-app-2026.10.26.1.bin",
-   "size": 2994512,
-   "sha256": "b42fb004f3c5888ca22ace66bd5d4851ebe448a1ecc9652d24dab2486ee7d50b"
+   "size": 2994608,
+   "sha256": "b41830d19237b6772c74e77c989cf412e7d2347bb067e8503c069c0eeb536e31"
   }
  ]
 }
