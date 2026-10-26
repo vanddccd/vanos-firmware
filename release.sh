@@ -102,6 +102,12 @@ for f in glob.glob(os.path.join(hold, 'vanos-app-*.bin')):
     v = b[0x30:0x50].split(b'\0')[0].decode('ascii', 'replace')
     if v == version:
         continue
+    # 只收比当前更旧的：服务器上可能还躺着更高版本的存档（试过又退回来的），
+    # 把新的塞进 history 会让设备去「回退」到一个更新的构建。
+    # Only keep older builds: a newer archive may still sit on the server, and
+    # listing it under history would "roll back" onto something newer.
+    if vkey(v) >= vkey(version):
+        continue
     hist.append({'version': v, 'app': os.path.basename(f), 'size': len(b),
                  'sha256': hashlib.sha256(b).hexdigest()})
 hist.sort(key=lambda e: vkey(e['version']), reverse=True)
@@ -129,6 +135,11 @@ print('ota.json  version=%s  size=%d  sha256=%s  history=%d'
       % (version, len(blob), digest[:8], len(hist)))
 for h in hist:
     print('  hist %s  %s  %d' % (h['version'], h['app'], h['size']))
+# landing 是持久目录、$DIST 是 mktemp：清单也要在 landing 留一份，否则下次
+# 手工从 landing 部署会把线上清单覆盖回旧版本。
+# Keep the manifest in landing too: $DIST is throwaway, and a manual deploy from
+# landing would otherwise push the old manifest back to the site.
+cp "$DIST/ota.json" "$LANDING/ota.json"
 PY
 # 在 landing 目录里部署：Functions（functions/）从这里打包，静态文件用临时目录快照
 ( cd "$LANDING" && npx --yes wrangler@3 pages deploy "$DIST" --project-name=vanos --branch=master --commit-dirty=true )
