@@ -141,5 +141,30 @@ PY
 # Keep the manifest in landing too: $DIST is throwaway, and a manual deploy from
 # landing would otherwise push the old manifest back to the site.
 cp "$DIST/ota.json" "$LANDING/ota.json"
+# 固件本体也必须回写 landing：$DIST 是 mktemp -d，部署完就没了；而 landing 是下一轮
+# 部署的输入源之一。如果只回写清单、不回写固件，landing 里会钉着一份旧 bin，哪天手工
+# 从 landing 部署，旧固件就盖掉线上最新的，而 ota.json 的 size/sha 仍指向新版 ——
+# 设备下载后校验失败，且整个流程一声不响。2026-10-27 实测踩到过一次。
+# Keep the payload in landing for the same reason the manifest is kept there:
+# a manual deploy from landing would otherwise republish a stale binary that no
+# longer matches ota.json's size/sha256, and every device would fail the check.
+cp "$DIST/vanos-app.bin" "$LANDING/vanos-app.bin"
 # 在 landing 目录里部署：Functions（functions/）从这里打包，静态文件用临时目录快照
 ( cd "$LANDING" && npx --yes wrangler@3 pages deploy "$DIST" --project-name=vanos --branch=master --commit-dirty=true )
+
+# 部署完立刻自检：ota.json 声明的每个文件，在「线上 / GitHub bin/master / landing」
+# 三方核对 size + sha256，任一不符就红字并让脚本失败退出。
+# deploy 是整目录快照、覆盖式生效、没有回滚按钮 —— 错了必须当场知道。
+# Self-check right after deploy: every file ota.json declares must match in size and
+# sha256 across the live site, the GitHub bin repo, and the landing copy.
+VERIFY="$(pwd)/verify-release.sh"
+if [ -x "$VERIFY" ]; then
+  echo
+  echo "== 发布后自检 =="
+  if ! "$VERIFY"; then
+    echo "！自检失败：线上已部署，但存在不一致（见上方 ✗ 项），请立即处理。" >&2
+    exit 1
+  fi
+else
+  echo "！找不到 $VERIFY，跳过发布后自检" >&2
+fi
