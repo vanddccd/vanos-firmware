@@ -40,7 +40,13 @@ if git diff --cached --quiet; then
 else
   git commit -m "$MSG"
 fi
-git push bin HEAD:master
+# 网络不通（GitHub 连不上）时仍要能把 OTA 发出去：本地先提交好，等网络恢复再补推。
+# SKIP_GIT_PUSH=1 skips the GitHub mirror; commit locally and push later.
+if [ "${SKIP_GIT_PUSH:-0}" = "1" ]; then
+  echo "! SKIP_GIT_PUSH=1：跳过推送 GitHub 镜像（本地已提交，恢复网络后补 git push bin master）" >&2
+else
+  git push bin HEAD:master
+fi
 
 LANDING="${LANDING:-$(cd .. && pwd)/landing}"
 if [ -f "$LANDING/sync-manifests.py" ]; then
@@ -126,7 +132,9 @@ manifest = {
     'app': 'vanos-app.bin',
     'size': len(blob),
     'sha256': digest,
-    'notes': '',
+    # NOTES 环境变量进清单，设备「检查更新」的抽屉正文会显示它（VANOS_OTA notes）。
+    # NOTES lands in the manifest and shows up as the drawer body on the device.
+    'notes': os.environ.get('NOTES', ''),
     'history': hist,
 }
 with open(dst, 'w', encoding='utf-8') as out:
