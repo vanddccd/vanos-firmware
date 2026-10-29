@@ -1,29 +1,35 @@
 {
- "product": "vanos",
- "channel": "stable",
- "version": "2026.10.28.1",
- "app": "vanos-app.bin",
- "size": 3332656,
- "sha256": "5eed9f50f0c1d379e7bc5b5d0007077b84cc59121a075f747d7daea7b8422e3f",
- "notes": "翻页器内存策略重做：起WiFi前自动休眠蓝牙、完事自动重连｜内存门槛改为实测自学，不再写死｜修「关闭蓝牙」重启与「连接失败」卡死｜阅读页翻页器默认关，按一下键自动激活并照样翻页｜修蓝牙抽屉开着时电量冻结｜验证版：含诊断日志，七项改动待真机复核",
- "history": [
-  {
-   "version": "2026.10.27.1",
-   "app": "vanos-app-2026.10.27.1.bin",
-   "size": 3329488,
-   "sha256": "d52f983e947db62c249ca0c4fd5d6fe78cdbe08d5119f3f801dad94907b27400"
-  },
-  {
-   "version": "2026.10.26.2",
-   "app": "vanos-app-2026.10.26.2.bin",
-   "size": 2997104,
-   "sha256": "e5e8350d917576eb69ef65cb69328d34aed1a018807016b5519258a603e0e25e"
-  },
-  {
-   "version": "2026.10.26.1",
-   "app": "vanos-app-2026.10.26.1.bin",
-   "size": 2997056,
-   "sha256": "d017405076f5709988e12e4e2dd584aab57038db941ea2bb2579bbacfee5e7bb"
-  }
- ]
+  "product": "vanos",
+  "channel": "stable",
+  "version": "2026.10.28.4",
+  "app": "vanos-app-2026.10.28.4.bin",
+  "size": 3260944,
+  "sha256": "92c703b76ded5602dd265268c0d86eb66b3f522d14fd2f49b059d522acb42f22",
+  "notes": "蓝牙回连修好：退出传书页自动回连、掉线后能重连｜图片内存闸门改为按图动态算，待机壁纸不再误报内存不足｜图片解码失败会给出文件名与原因｜回归：翻页跟手、电量、开机不自动连",
+  "history": [
+    {
+      "version": "2026.10.28.1",
+      "app": "vanos-app.bin",
+      "size": 3332656,
+      "sha256": "5eed9f50f0c1d379e7bc5b5d0007077b84cc59121a075f747d7daea7b8422e3f"
+    },
+    {
+      "version": "2026.10.27.1",
+      "app": "vanos-app-2026.10.27.1.bin",
+      "size": 3329488,
+      "sha256": "d52f983e947db62c249ca0c4fd5d6fe78cdbe08d5119f3f801dad94907b27400"
+    },
+    {
+      "version": "2026.10.26.2",
+      "app": "vanos-app-2026.10.26.2.bin",
+      "size": 2997104,
+      "sha256": "e5e8350d917576eb69ef65cb69328d34aed1a018807016b5519258a603e0e25e"
+    },
+    {
+      "version": "2026.10.26.1",
+      "app": "vanos-app-2026.10.26.1.bin",
+      "size": 2997056,
+      "sha256": "d017405076f5709988e12e4e2dd584aab57038db941ea2bb2579bbacfee5e7bb"
+    }
+  ]
 }
