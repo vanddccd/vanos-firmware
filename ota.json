@@ -1,47 +1,10 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.28.7",
- "app": "vanos-app-2026.10.28.7.bin",
- "size": 3262272,
- "sha256": "58946f99e30d9fa1ffc810aceb651cb923703c64d95a93dd420f95265afb7bdf",
- "notes": "翻页器蓝牙：让路后总能自动接回｜省电档监督超时 4 秒｜「恢复到上一版本」显示真实版本号｜图片解码内存按图动态计算",
- "history": [
-  {
-   "version": "2026.10.28.5",
-   "app": "vanos-app-2026.10.28.5.bin",
-   "size": 3261936,
-   "sha256": "b1125f6b20f171d9de55b73ed8900ba6d428b309b550cb46ac22108aca46f2e9"
-  },
-  {
-   "version": "2026.10.28.4",
-   "app": "vanos-app-2026.10.28.4.bin",
-   "size": 3260944,
-   "sha256": "92c703b76ded5602dd265268c0d86eb66b3f522d14fd2f49b059d522acb42f22"
-  },
-  {
-   "version": "2026.10.28.1",
-   "app": "vanos-app.bin",
-   "size": 3332656,
-   "sha256": "5eed9f50f0c1d379e7bc5b5d0007077b84cc59121a075f747d7daea7b8422e3f"
-  },
-  {
-   "version": "2026.10.27.1",
-   "app": "vanos-app-2026.10.27.1.bin",
-   "size": 3329488,
-   "sha256": "d52f983e947db62c249ca0c4fd5d6fe78cdbe08d5119f3f801dad94907b27400"
-  },
-  {
-   "version": "2026.10.26.2",
-   "app": "vanos-app-2026.10.26.2.bin",
-   "size": 2997104,
-   "sha256": "e5e8350d917576eb69ef65cb69328d34aed1a018807016b5519258a603e0e25e"
-  },
-  {
-   "version": "2026.10.26.1",
-   "app": "vanos-app-2026.10.26.1.bin",
-   "size": 2997056,
-   "sha256": "d017405076f5709988e12e4e2dd584aab57038db941ea2bb2579bbacfee5e7bb"
-  }
- ]
+ "version": "2026.10.28.8",
+ "app": "vanos-app.bin",
+ "size": 3262752,
+ "sha256": "e8f4df8a7bdb3b825614696f7c7f75d97c1aeadc5743a26e037bf32a1cf4281c",
+ "notes": "「恢复到上一版本」在只有一版时改为重刷当前版本｜检查更新与升级结束后翻页器自动接回蓝牙｜发布线不再挂历史版本",
+ "history": []
 }
