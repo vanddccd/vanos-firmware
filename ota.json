@@ -1,10 +1,10 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.28.8",
+ "version": "2026.10.30.1",
  "app": "vanos-app.bin",
- "size": 3262752,
- "sha256": "e8f4df8a7bdb3b825614696f7c7f75d97c1aeadc5743a26e037bf32a1cf4281c",
- "notes": "「恢复到上一版本」在只有一版时改为重刷当前版本｜检查更新与升级结束后翻页器自动接回蓝牙｜发布线不再挂历史版本",
+ "size": 3262800,
+ "sha256": "7d27e8f307801bf04a48e1d0b43aacc08de5cd11bd3fcbb6cd363b100a0122f6",
+ "notes": "锁屏前先释放阅读图片缓存，图片书按电源键不再卡住｜图片书唤醒首屏多 1–2 秒重建背景",
  "history": []
 }
