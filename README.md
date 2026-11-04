@@ -167,8 +167,9 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 | 文件 | 大小 | 说明 |
 |---|---|---|
-| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.10.30.1**，`sha256 83f3e6b6…`） |
-| `vanos-app.bin` | 3.26 MB | 仅应用，从 `0x10000` 刷（当前 **2026.10.30.1**，`sha256 7d27e8f3…`） |
+| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.11.05.1**，`sha256 84ffd225…`） |
+| `vanos-app.bin` | 3.26 MB | 仅应用，从 `0x10000` 刷（当前 **2026.11.05.1**，`sha256 3553d1f8…`） |
+| `vanos-app-2026.11.05.1.bin` | 3.26 MB | 当前版本的存档副本（与 `vanos-app.bin` 同内容，便于按版本回退） |
 | `flash.sh` | — | 一键刷写脚本：`./flash.sh [端口]` 整片刷、`./flash.sh [端口] app` 只刷应用 |
 | `fonts/朱雀仿宋.ttf` | 8.4 MB | 推荐正文字体，放到 SD 卡 `VanOS/fonts/`（见下节） |
 
@@ -176,7 +177,23 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 ## 更新日志
 
-### 2026-10-30（**2026.10.30.1**，当前版本）
+### 2026-11-05（**2026.11.05.1**，当前版本）
+
+**这版两块：设置页层级重排、开机不再永久卡死**
+
+- **设置页字号按 1.25 阶梯重排**：二级键名原来是 38，比一级分组标题的 37 还大，层级是反的；
+  现在 `40（状态栏/底栏，未动）> 37（一级标题）> 32（二级键名）> 26（值）`，相邻两级一眼能分开。
+  Settings typography now follows a 1.25 ladder; the L2 key (was 38) no longer out-shouts the L1
+  section title (37). Values drop to 26.
+- **冷启动卡在开机画面会自愈**：NVS 就绪后起 25 秒一次性守卫，首帧上屏（UI 进主循环）之前
+  还没起来就主动重启；连续 3 次起不来，第 4 次进安全模式（跳过开机图与开机动画直接出主页）。
+  计数存 NVS，断电不丢，UI 一起来就清零。这只把「永久卡住」变成「最多等 25 秒」，
+  **根因仍未定位**。
+  A 25 s one-shot guard restarts the chip if the first frame never lands; three failed boots in a
+  row switch to safe mode. Root cause is still unknown — this bounds the damage, nothing more.
+- 已知：图片书锁屏后唤醒首屏仍需 1–2 秒重建背景（2026.10.30.1 起的既有代价）。
+
+### 2026-10-30（**2026.10.30.1**）
 
 - 修复：阅读中按电源键锁屏会卡住。图片书停在插图页时，阅读页还攥着插图缓存和
   416 KB 背景帧，紧接着画关机图要把内存腾给它 —— 现在落完进度先释放这些缓存。

@@ -1,10 +1,10 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.10.30.1",
+ "version": "2026.11.05.1",
  "app": "vanos-app.bin",
- "size": 3262800,
- "sha256": "7d27e8f307801bf04a48e1d0b43aacc08de5cd11bd3fcbb6cd363b100a0122f6",
- "notes": "锁屏前先释放阅读图片缓存，图片书按电源键不再卡住｜图片书唤醒首屏多 1–2 秒重建背景",
+ "size": 3263856,
+ "sha256": "3553d1f89a625e81986f5bbf6b93f81fc5897a9c5199e2ba01f272327bc64063",
+ "notes": "设置页字号层级重排，标题和值终于分得开｜冷启动卡在开机画面会自动重试，连续失败进安全模式",
  "history": []
 }
