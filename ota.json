@@ -1,12 +1,18 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.11.05.1",
+ "version": "2026.11.13.1",
  "app": "vanos-app.bin",
- "size": 3263856,
- "sha256": "3553d1f89a625e81986f5bbf6b93f81fc5897a9c5199e2ba01f272327bc64063",
- "notes": "设置页字号层级重排，标题和值终于分得开｜冷启动卡在开机画面会自动重试，连续失败进安全模式",
+ "size": 3271120,
+ "sha256": "125b72a7547ed39f4002149720bca026ba5a7e5f4d2c2942a2fde59add5a9719",
+ "notes": "待机时钟不再睡死，电源键随时按随时退出｜时钟换成大字加月历，一眼看清几号星期几",
  "history": [
+  {
+   "version": "2026.11.05.1",
+   "app": "vanos-app-2026.11.05.1.bin",
+   "size": 3263856,
+   "sha256": "3553d1f89a625e81986f5bbf6b93f81fc5897a9c5199e2ba01f272327bc64063"
+  },
   {
    "version": "2026.10.30.1",
    "app": "vanos-app-2026.10.30.1.bin",
