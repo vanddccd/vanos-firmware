@@ -124,11 +124,14 @@ done < "$TMP/manifest.tsv"
 echo
 echo "== 3. 受保护文件（只读核对，不修改）=="
 for f in index.html merged-binary.bin; do
-  _probe=0
-  until curl -fsSI --max-time 20 "$BASE/$f" >/dev/null 2>&1 || [ "$_probe" -ge 3 ]; do
-    _probe=$((_probe + 1)); sleep 3
+  # 探测本身也要重试，并且把成功的那一次结果留下用 —— 原来重试完之后又裸调一次
+  # curl 做判断，最后那一次掉线就报红（2026-11-16 实测）。
+  _hit=0
+  for _a in 1 2 3 4; do
+    if curl -fsSI --max-time 30 "$BASE/$f" >/dev/null 2>&1; then _hit=1; break; fi
+    sleep 3
   done
-  if curl -fsSI --max-time 20 "$BASE/$f" >/dev/null 2>&1; then
+  if [ "$_hit" = "1" ]; then
     ok "$f 线上可访问"
   else
     bad "$f 线上不可访问"
