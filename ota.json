@@ -1,12 +1,18 @@
 {
  "product": "vanos",
  "channel": "stable",
- "version": "2026.11.13.1",
+ "version": "2026.11.16.8",
  "app": "vanos-app.bin",
- "size": 3271120,
- "sha256": "125b72a7547ed39f4002149720bca026ba5a7e5f4d2c2942a2fde59add5a9719",
- "notes": "待机时钟不再睡死，电源键随时按随时退出｜时钟换成大字加月历，一眼看清几号星期几",
+ "size": 3277600,
+ "sha256": "2b8b6e98f582822f5fb83da6fe98ba08cbbd7e1f7816b108f21dea05cd6846e1",
+ "notes": "修复选中反白的细横线：局部刷新的列掩码按 (x_stop-x_start)/2 置位，列宽为奇数时最后 1~2 列漏置位，被整列清零=一个电压都不发；本机竖屏旋转下物理列即逻辑行，屏幕上就是某一整行不动。另修正列段宽为奇数时向量内核漏算最后一像素。反白/反黑改为差分 GL16，选中换行更快。",
  "history": [
+  {
+   "version": "2026.11.13.1",
+   "app": "vanos-app-2026.11.13.1.bin",
+   "size": 3271120,
+   "sha256": "125b72a7547ed39f4002149720bca026ba5a7e5f4d2c2942a2fde59add5a9719"
+  },
   {
    "version": "2026.11.05.1",
    "app": "vanos-app-2026.11.05.1.bin",
@@ -18,6 +24,18 @@
    "app": "vanos-app-2026.10.30.1.bin",
    "size": 3262800,
    "sha256": "7d27e8f307801bf04a48e1d0b43aacc08de5cd11bd3fcbb6cd363b100a0122f6"
+  },
+  {
+   "version": "2026.10.27.2",
+   "app": "vanos-app-2026.10.27.2.bin",
+   "size": 2986960,
+   "sha256": "224d9c45aa8f074bd4027bbd099da49141334c95a9d40334948bb45251a35b3a"
+  },
+  {
+   "version": "2026.10.27.1",
+   "app": "vanos-app-2026.10.27.1.bin",
+   "size": 2986880,
+   "sha256": "18a569dc7e86c404226469474d72cc93a85197212f0e17caceff74be3a922790"
   }
  ]
 }

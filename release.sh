@@ -157,6 +157,17 @@ cp "$DIST/ota.json" "$LANDING/ota.json"
 # a manual deploy from landing would otherwise republish a stale binary that no
 # longer matches ota.json's size/sha256, and every device would fail the check.
 cp "$DIST/vanos-app.bin" "$LANDING/vanos-app.bin"
+# 清单是在上面的 git add -A 之后才生成的，所以必须在这里单独提交并回推 ——
+# 否则 GitHub 镜像里的 ota.json 永远落后一版（2026-11-16 实测踩到过）。
+# The manifest is generated after the commit above, so it has to be committed and
+# pushed here as well; otherwise the GitHub mirror keeps the previous version forever.
+cp "$LANDING/ota.json" ./ota.json
+if ! git diff --quiet -- ota.json; then
+  VER="$(python3 -c 'import json;print(json.load(open("ota.json"))["version"])')"
+  git add ota.json
+  git commit -q -m "ota.json: $VER"
+  git push bin HEAD:master
+fi
 # 在 landing 目录里部署：Functions（functions/）从这里打包，静态文件用临时目录快照
 ( cd "$LANDING" && npx --yes wrangler@3 pages deploy "$DIST" --project-name=vanos --branch=master --commit-dirty=true )
 
