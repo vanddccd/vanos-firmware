@@ -23,6 +23,19 @@ fail=0; pass=0
 ok()  { pass=$((pass+1)); printf '  \033[32m✓\033[0m %s\n' "$*"; }
 bad() { fail=$((fail+1)); printf '  \033[31m✗\033[0m %s\n' "$*"; }
 sha_of() { shasum -a 256 "$1" | awk '{print $1}'; }
+# 本机到 Cloudflare 偶发 SSL_ERROR_SYSCALL（每次挂在不同文件上）。不带重试的自检会
+# 把断连报成"文件不一致"，比不查更糟 —— 结论不可信。所有取回都走这里，最多 4 次。
+# Local TLS to Cloudflare drops intermittently; without retries the check reports a
+# transport failure as a content mismatch, which is worse than not checking at all.
+fetch() { # url out [maxtime]
+  _u="$1"; _o="$2"; _t="${3:-240}"; _n=0
+  while [ "$_n" -lt 4 ]; do
+    if curl -fsS --max-time "$_t" "$_u" -o "$_o"; then return 0; fi
+    _n=$((_n + 1))
+    [ "$_n" -lt 4 ] && sleep 3
+  done
+  return 1
+}
 
 echo "== 0. 环境 =="
 echo "  线上   : $BASE"
@@ -34,7 +47,7 @@ git -C "$WT" fetch bin -q 2>/dev/null || echo "  (git fetch 失败，用本地 r
 
 echo
 echo "== 1. 线上 ota.json =="
-if ! curl -fsS --max-time 25 "$BASE/ota.json" -o "$TMP/ota.json"; then
+if ! fetch "$BASE/ota.json" "$TMP/ota.json" 25; then
   echo "  拿不到 $BASE/ota.json"; exit 2
 fi
 cat "$TMP/ota.json"
@@ -50,13 +63,37 @@ PY
 DECL_VER=$(head -1 "$TMP/manifest.tsv" | cut -f1)
 echo "  声明最新版本：$DECL_VER"
 
+# 清单本身必须三方逐字节一致：线上 / GitHub bin/master / landing。
+# 设备读的是线上那份，人看的是 GitHub 那份 —— 两份不同就会出现「网页说新、设备说旧」
+# 这种谁也说不清的状态。这里直接比字节，不比字段。
+# The manifest itself must be byte-identical across live, GitHub and landing: the device
+# reads the live one, a human reads the GitHub one, and divergence is invisible otherwise.
+echo
+echo "== 1b. ota.json 三方字节一致 =="
+LIVE_SHA=$(sha_of "$TMP/ota.json")
+ok "线上 ota.json sha=${LIVE_SHA:0:16}… size=$(wc -c < "$TMP/ota.json" | tr -d ' ')"
+if git -C "$WT" cat-file -e "bin/master:ota.json" 2>/dev/null; then
+  GH_SHA=$(git -C "$WT" cat-file -p "bin/master:ota.json" | shasum -a 256 | awk '{print $1}')
+  [ "$GH_SHA" = "$LIVE_SHA" ] && ok "GitHub bin/master:ota.json 与线上同字节" \
+    || bad "GitHub bin/master:ota.json sha=${GH_SHA:0:16}… ≠ 线上 ${LIVE_SHA:0:16}…"
+else
+  bad "GitHub bin/master 上没有 ota.json"
+fi
+if [ -f "$LANDING/ota.json" ]; then
+  LD_SHA=$(sha_of "$LANDING/ota.json")
+  [ "$LD_SHA" = "$LIVE_SHA" ] && ok "landing/ota.json 与线上同字节" \
+    || bad "landing/ota.json sha=${LD_SHA:0:16}… ≠ 线上 ${LIVE_SHA:0:16}…"
+else
+  bad "landing 没有 ota.json"
+fi
+
 echo
 echo "== 2. 逐文件三方校验 =="
 while IFS=$'\t' read -r ver f size sha; do
   [ -n "${ver:-}" ] || continue
   echo "-- $ver  ($f)"
   [ "$QUICK" = "1" ] && { ok "quick 模式跳过下载"; continue; }
-  if ! curl -fsS --max-time 240 "$BASE/$f" -o "$TMP/$(basename "$f")"; then
+  if ! fetch "$BASE/$f" "$TMP/$(basename "$f")" 240; then
     bad "$f 线上不可下载"; continue
   fi
   rs=$(wc -c < "$TMP/$(basename "$f")" | tr -d ' ')
@@ -87,7 +124,11 @@ done < "$TMP/manifest.tsv"
 echo
 echo "== 3. 受保护文件（只读核对，不修改）=="
 for f in index.html merged-binary.bin; do
-  if curl -fsSI --max-time 15 "$BASE/$f" >/dev/null 2>&1; then
+  _probe=0
+  until curl -fsSI --max-time 20 "$BASE/$f" >/dev/null 2>&1 || [ "$_probe" -ge 3 ]; do
+    _probe=$((_probe + 1)); sleep 3
+  done
+  if curl -fsSI --max-time 20 "$BASE/$f" >/dev/null 2>&1; then
     ok "$f 线上可访问"
   else
     bad "$f 线上不可访问"

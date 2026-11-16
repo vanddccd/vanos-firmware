@@ -167,9 +167,10 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 | 文件 | 大小 | 说明 |
 |---|---|---|
-| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.11.13.1**，`sha256 78f657d2…`） |
-| `vanos-app.bin` | 3.27 MB | 仅应用，从 `0x10000` 刷（当前 **2026.11.13.1**，`sha256 125b72a7…`） |
-| `vanos-app-2026.11.13.1.bin` | 3.27 MB | 当前版本的存档副本（与 `vanos-app.bin` 同内容，便于按版本回退） |
+| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.11.16.9**，`sha256 9cad954e…`） |
+| `vanos-app.bin` | 3.27 MB | 仅应用，从 `0x10000` 刷（当前 **2026.11.16.9**，`sha256 13294b47…`） |
+| `vanos-app-2026.11.16.9.bin` | 3.27 MB | 当前版本的存档副本（与 `vanos-app.bin` 同内容，便于按版本回退） |
+| `vanos-app-2026.11.16.8.bin` | 3.27 MB | 上一版存档（回退目标） |
 | `flash.sh` | — | 一键刷写脚本：`./flash.sh [端口]` 整片刷、`./flash.sh [端口] app` 只刷应用 |
 | `fonts/朱雀仿宋.ttf` | 8.4 MB | 推荐正文字体，放到 SD 卡 `VanOS/fonts/`（见下节） |
 
@@ -177,7 +178,28 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 ## 更新日志
 
-### 2026-11-13（**2026.11.13.1**，当前版本）
+### 2026-11-16（**2026.11.16.9**，当前版本）
+
+**这版重点：选中反白那条细横线查清并修掉；新增阅读夜间模式与全屏模式**
+
+- **细横线的根因在驱动，不在排版**：`components/epdiy/src/highlevel.c` 的
+  `hl_update_area()` 在局部刷新时按字节置位列掩码，原式
+  `memset(dirty_columns + x_start/2, 0xFF, (x_stop - x_start) / 2)` 在列宽为奇数时
+  漏掉最后 1~2 列；`epd_apply_line_mask_VE()` 会把掩码为 0 的列整列清零 = 一个电压都不发。
+  本机 `EPD_ROT_INVERTED_PORTRAIT`，物理列 ↔ 逻辑行，屏上就是某一整行停在原样。
+  改成按字节精确覆盖到最后一列。附带修正 `epd_difference_column_range()` 的奇段宽
+  （向量内核会漏算最后一像素、复上一帧残留差分）。
+  An odd column span left the last columns unset, and those columns were driven with zero
+  voltage; on this rotated panel one column is one row, which is the hairline.
+- **选中换行跟手**：反白/反黑那一帧由满程 GL16 改差分 GL16，只驱真正要变的像素；
+  排查期加过的「同带双推」撤回。
+- **阅读夜间模式**：阅读设置 → 外观组末行开关，只把阅读视图转深色，面板与系统 UI 仍浅色；
+  图片不反色，暗图加 2px 纸白 inset 描边；开关内存态，进阅读界面默认关。
+- **阅读全屏模式**：只把版面向上顶掉状态栏那一条，版心边距照旧、页脚不动；书眉项置灰；
+  同样不落盘。`RD_ST_H` 保持常量 36（`rd_fnpop_max_lines()` 依赖）。
+- **注脚弹窗**：打开/滚动只刷卡片带、关闭刷整屏，均 GL16 满程、零 GC16。
+
+### 2026-11-13（**2026.11.13.1**）
 
 **这版重点：待机时钟改浅睡常驻，电源键随时能退**
 
