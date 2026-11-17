@@ -167,10 +167,11 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 | 文件 | 大小 | 说明 |
 |---|---|---|
-| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.11.16.9**，`sha256 9cad954e…`） |
-| `vanos-app.bin` | 3.27 MB | 仅应用，从 `0x10000` 刷（当前 **2026.11.16.9**，`sha256 13294b47…`） |
-| `vanos-app-2026.11.16.9.bin` | 3.27 MB | 当前版本的存档副本（与 `vanos-app.bin` 同内容，便于按版本回退） |
-| `vanos-app-2026.11.16.8.bin` | 3.27 MB | 上一版存档（回退目标） |
+| `merged-binary.bin` | 13.7 MB | 完整镜像（bootloader + 分区表 + app + ota_data），从 `0x0` 刷（当前 **2026.11.17.3**，`sha256 0fcede0b…`） |
+| `vanos-app.bin` | 3.28 MB | 仅应用，从 `0x10000` 刷（当前 **2026.11.17.3**，`sha256 9dd9c59d…`） |
+| `vanos-app-2026.11.17.3.bin` | 3.28 MB | 当前版本的存档副本（与 `vanos-app.bin` 同内容，便于按版本回退） |
+| `vanos-app-2026.11.16.9.bin` | 3.27 MB | 上一版存档（回退目标 1） |
+| `vanos-app-2026.11.16.8.bin` | 3.27 MB | 更早存档（回退目标 2） |
 | `flash.sh` | — | 一键刷写脚本：`./flash.sh [端口]` 整片刷、`./flash.sh [端口] app` 只刷应用 |
 | `fonts/朱雀仿宋.ttf` | 8.4 MB | 推荐正文字体，放到 SD 卡 `VanOS/fonts/`（见下节） |
 
@@ -178,7 +179,29 @@ OTA 做不到——它只写应用分区那一块，长度上限 4MB，也改不
 
 ## 更新日志
 
-### 2026-11-16（**2026.11.16.9**，当前版本）
+### 2026-11-17（**2026.11.17.3**，当前版本）
+
+**这版把「像纸书」的三件事补上：夜间字重、行尾禁则、孤行寡行**
+
+- **夜间正文 gamma 0.8 → 0.9**：夜间白字压黑底时 0.8 容易让细笔画（`氵 讠 纟`）断线，
+  0.9 更实一些。真机 A/B 后定档。浅色模式与系统界面不受影响 —— gamma 仍然只在
+  `rd_paint_night()` 的配对区间内生效。常量提成 `RD_NIGHT_GAMMA`，`page_reader.c` 两处 begin 调用点共用。
+  Night body gamma moves to 0.9 behind `RD_NIGHT_GAMMA`; light mode and UI are untouched.
+- **避头尾补上「行尾禁则」**：原来只有行首禁则（`。，、！？` 这类可以悬挂行尾、不许起行），
+  开括号前引号 `（ 「 『 【 《 〈 “ ‘` 却能停在行尾。现在 `rd_fit_line()` 收尾会把这类码点
+  退到下一行；退完本行不足 2 字就放弃退让（宁可违反一次，也不留单字成行）。只收中文/全角形态。
+  Line-end kinsoku: an opening bracket or quote no longer ends a line.
+- **「孤行寡行」开关（阅读设置 → 断行，按书保存，出厂开）**：
+  ① 寡行：本屏被切时若该段剩余只装得下一行，把本屏最后一行一起带下去；
+  ② 孤行：本屏最底一行若是某段的第一行且该段还有后续，把它带下去。
+  两条都要求推完仍留 ≥ 2 行正文，不会推出大半页空白。原先的寡行守卫挂在 `s_dynlh` 上，
+  而「动态行高」出厂 OFF，等于从没执行过；现在改由这个开关门控。`RD_ITEMS` 因此多一项
+  （31 → 32），`RD_GROUPS` 的断行组 2 → 3 行，`rd_layout_hash()` 也把这个开关并进指纹，
+  避免命中陈旧页表。**代价：同一本书的页码总数会变**（书签与阅读进度按字节偏移存，不受影响）。
+  Widow/orphan control as a per-book switch. Page counts shift; bookmarks and progress are
+  stored as byte offsets, so they still land on the same sentence.
+
+### 2026-11-16（**2026.11.16.9**）
 
 **这版重点：选中反白那条细横线查清并修掉；新增阅读夜间模式与全屏模式**
 

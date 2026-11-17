@@ -1,41 +1,41 @@
 {
- "product": "vanos",
- "channel": "stable",
- "version": "2026.11.16.9",
- "app": "vanos-app.bin",
- "size": 3277600,
- "sha256": "13294b479af25e2bd918138fa8b93618c9ceb686c9eb87829cf394f7caeaad00",
- "notes": "长按选中反白时，文字中间那条细线没了，点一行立刻变反白也不再慢半拍｜新增阅读夜间模式与全屏模式，开关都在阅读设置里，每次进书默认关闭",
- "history": [
-  {
-   "version": "2026.11.16.8",
-   "app": "vanos-app-2026.11.16.8.bin",
-   "size": 3277600,
-   "sha256": "2b8b6e98f582822f5fb83da6fe98ba08cbbd7e1f7816b108f21dea05cd6846e1"
-  },
-  {
-   "version": "2026.11.13.1",
-   "app": "vanos-app-2026.11.13.1.bin",
-   "size": 3271120,
-   "sha256": "125b72a7547ed39f4002149720bca026ba5a7e5f4d2c2942a2fde59add5a9719"
-  },
-  {
-   "version": "2026.11.05.1",
-   "app": "vanos-app-2026.11.05.1.bin",
-   "size": 3263856,
-   "sha256": "3553d1f89a625e81986f5bbf6b93f81fc5897a9c5199e2ba01f272327bc64063"
-  },
-  {
-   "version": "2026.10.30.1",
-   "app": "vanos-app-2026.10.30.1.bin",
-   "size": 3262800,
-   "sha256": "7d27e8f307801bf04a48e1d0b43aacc08de5cd11bd3fcbb6cd363b100a0122f6"
-  },
-  {
-   "version": "2026.10.27.2",
-   "app": "vanos-app-2026.10.27.2.bin",
-   "size": 2986960,
-   "sha256": "224d9c45aa8f074bd4027bbd099da49141334c95a9d40334948bb45251a35b3a"
-  }
- ]
+  "product": "vanos",
+  "channel": "stable",
+  "version": "2026.11.17.3",
+  "app": "vanos-app.bin",
+  "size": 3278224,
+  "sha256": "9dd9c59d1b2c2a5f30ed372e183d2e9e48a6fefa91aa13d1f66228e44ace76df",
+  "notes": "阅读设置→断行 里多了一个「孤行寡行」开关，打开后不会再看到一页最底下孤零零挂着一段的开头，或下一页顶上只剩上一段的尾巴｜夜间模式的字加粗一档，小字不容易断笔；中文行的末尾也不会再把「（」这类括号甩到行尾",
+  "history": [
+    {
+      "version": "2026.11.16.9",
+      "app": "vanos-app-2026.11.16.9.bin",
+      "size": 3277600,
+      "sha256": "13294b479af25e2bd918138fa8b93618c9ceb686c9eb87829cf394f7caeaad00"
+    },
+    {
+      "version": "2026.11.16.8",
+      "app": "vanos-app-2026.11.16.8.bin",
+      "size": 3277600,
+      "sha256": "2b8b6e98f582822f5fb83da6fe98ba08cbbd7e1f7816b108f21dea05cd6846e1"
+    },
+    {
+      "version": "2026.11.13.1",
+      "app": "vanos-app-2026.11.13.1.bin",
+      "size": 3271120,
+      "sha256": "125b72a7547ed39f4002149720bca026ba5a7e5f4d2c2942a2fde59add5a9719"
+    },
+    {
+      "version": "2026.11.05.1",
+      "app": "vanos-app-2026.11.05.1.bin",
+      "size": 3263856,
+      "sha256": "3553d1f89a625e81986f5bbf6b93f81fc5897a9c5199e2ba01f272327bc64063"
+    },
+    {
+      "version": "2026.10.30.1",
+      "app": "vanos-app-2026.10.30.1.bin",
+      "size": 3262800,
+      "sha256": "7d27e8f307801bf04a48e1d0b43aacc08de5cd11bd3fcbb6cd363b100a0122f6"
+    }
+  ]
 }
